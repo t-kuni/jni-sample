@@ -38,9 +38,17 @@ void *PrintHello(void *arg)
 
     vm->AttachCurrentThread((void **)&env, NULL);
 
+    env->FindClass("HelloWorld");
+    env->FindClass("HelloWorld");
+
     Block *b = (Block *) arg;
     printf("b.name:%s\n", b->name);
     printf("b.jname:%s\n", env->GetStringUTFChars(b->jname, NULL));
+
+    jclass cls = env->FindClass("HelloWorld");
+    jmethodID methodID = env->GetStaticMethodID(cls, "test", "(II)I");
+    jint val = env->CallStaticIntMethod(cls, methodID, 3, 5);
+    printf("call test = %d\n", val);
 
     vm->DetachCurrentThread();
   } else {
@@ -55,20 +63,30 @@ void *PrintHello(void *arg)
 JNIEXPORT void JNICALL
 Java_HelloWorld_print(JNIEnv *env, jobject obj)
 {
-    Block b;
-    b.name = "aaaaaaaa";
-    b.jname = (jstring) env->NewGlobalRef(env->NewStringUTF("bbbbbbb"));
+    Block *b = (Block *) malloc(sizeof(Block));
+    b->name = "aaaaaaaa";
+    b->jname = (jstring) env->NewGlobalRef(env->NewStringUTF("bbbbbbb"));
 
     printf("main 1\n");
 
+    jclass cls = env->FindClass("HelloWorld");
+    jmethodID methodID = env->GetStaticMethodID(cls, "test", "(II)I");
+    jint val = env->CallStaticIntMethod(cls, methodID, 3, 5);
+    printf("call test = %d\n", val);
+
     pthread_t t;
-    pthread_create(&t, NULL, PrintHello, (void *)&b);
+    int r;
+    r = pthread_create(&t, NULL, PrintHello, (void *)b);
+    if (r) {
+      printf("thread was't created");
+    }
 
     printf("main 2\n");
 
     pthread_exit(NULL);
 
     printf("main 3\n");
+    free(b);
     return;
 }
 

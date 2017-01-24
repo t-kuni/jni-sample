@@ -8,4 +8,8 @@ class HelloWorld
     static {
         System.loadLibrary("HelloWorld");
     }
+
+    public static int test(int a, int b) {
+      return a + b;
+    }
 }
