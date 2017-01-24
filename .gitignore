@@ -1,0 +1,4 @@
+HelloWorld.class
+libHelloWorld.so
+HelloWorld$Listener.class
+*.log
