@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include "HelloWorld.h"
 
@@ -8,10 +9,11 @@ Java_HelloWorld_print(JNIEnv *env, jobject obj)
 {
     printf("main 1\n");
 
-    jclass cls = env->FindClass("HelloWorld");
-    jmethodID methodID = env->GetStaticMethodID(cls, "test", "(II)I");
-    jint val = env->CallStaticIntMethod(cls, methodID, 3, 5);
-    printf("call test = %d\n", val);
+    char buf[128];
+    printf("%s\n", buf);
+    int len = strlen(buf);
+    sprintf(buf + len, "aaaa%s", "bbb");
+    printf("%s\n", buf);
 
     printf("main 2\n");
 }
