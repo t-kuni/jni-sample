@@ -19,6 +19,9 @@ void thread_cleanup(void *data_) {
 
 void *PrintHello(void *data_)
 {
+  /**
+   * クリーンアップ処理を登録します
+   */
   pthread_cleanup_push(thread_cleanup, data_);
   Data *d = (Data *) data_;
 
@@ -28,7 +31,14 @@ void *PrintHello(void *data_)
 
   printf("thread end[name:%s]\n", d->msg);
 
+  /**
+   * スレッドを終了する。クリーンアップ処理が呼び出される
+   */
   pthread_exit(NULL);
+  /**
+   * pthread_cleanup_popと対になる様に{}内に存在する必要がある
+   * 引数0は特に何もやりません
+   */
   pthread_cleanup_pop(0);
 }
 
