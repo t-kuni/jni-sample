@@ -8,5 +8,5 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:. &&\
 javac -g HelloWorld.java &&\
 javah HelloWorld &&\
 export JAVA_HOME=/usr/lib/jvm/java-8-oracle &&\
-gcc -shared -fPIC -g -O0 -I $JAVA_HOME/include -I $JAVA_HOME/include/linux libHelloWorld.cpp -o libHelloWorld.so &&\
+g++ -shared -fPIC -g -O0 -I $JAVA_HOME/include -I $JAVA_HOME/include/linux libHelloWorld.cpp -o libHelloWorld.so &&\
 java HelloWorld

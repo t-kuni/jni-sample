@@ -28,6 +28,7 @@ void *PrintHello(void *data_)
 
   printf("thread end[name:%s]\n", d->msg);
 
+  pthread_cleanup_pop(1);
   pthread_exit(NULL);
 }
 
