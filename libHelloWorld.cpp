@@ -7,13 +7,20 @@
 #define NUM_THREADS  5
 
 typedef struct {
-    pthread_mutex_t *mutex;
     const char *msg;
+    const bool *busy;
 } Data;
 
-void *PrintHello(void *arg)
+void thread_cleanup(void *data_) {
+  Data *d = (Data *)data_;
+  printf("thread cleanup[name:%s]\n", d->msg);
+  free(d);
+}
+
+void *PrintHello(void *data_)
 {
-  Data *d = (Data *) arg;
+  pthread_cleanup_push(thread_cleanup, data_);
+  Data *d = (Data *) data_;
 
   printf("thread run[name:%s]\n", d->msg);
 
@@ -21,23 +28,14 @@ void *PrintHello(void *arg)
 
   printf("thread end[name:%s]\n", d->msg);
 
-  free(d);
   pthread_exit(NULL);
 }
 
-void run(pthread_mutex_t *mutex, const char *msg) {
+void run(bool *busy, const char *msg) {
     Data *d = (Data *) malloc(sizeof(Data));
     d->msg = msg;
-    d->mutex = mutex;
+    d->busy = busy;
 
-    switch (pthread_mutex_trylock(mutex)) {
-      case EINVAL:
-        printf("thread EINVAL[name:%s]\n", msg);
-        return;
-      case EBUSY:
-        printf("thread EBUSY[name:%s]\n", msg);
-        return;
-    }
     pthread_t t;
     pthread_create(&t, NULL, PrintHello, (void *)d);
 }
@@ -47,25 +45,25 @@ Java_HelloWorld_print(JNIEnv *env, jobject obj)
 {
     printf("main start\n");
 
-    static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+    static bool busy = false;
 
-    run(&mutex, "A");
+    run(&busy, "A");
     sleep(1);
-    run(&mutex, "B");
+    run(&busy, "B");
     sleep(1);
-    run(&mutex, "C");
+    run(&busy, "C");
     sleep(1);
-    run(&mutex, "D");
+    run(&busy, "D");
     sleep(1);
-    run(&mutex, "E");
+    run(&busy, "E");
     sleep(1);
-    run(&mutex, "F");
+    run(&busy, "F");
     sleep(1);
-    run(&mutex, "G");
+    run(&busy, "G");
     sleep(1);
-    run(&mutex, "H");
+    run(&busy, "H");
     sleep(1);
-    run(&mutex, "I");
+    run(&busy, "I");
     sleep(1);
     sleep(1);
 
